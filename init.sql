@@ -1,0 +1,3 @@
+CREATE DATABASE IF NOT EXISTS `prisma` CHARACTER SET utf8mb4 collate utf8mb4_unicode_ci;
+GRANT ALL PRIVILEGES ON *.* TO 'nestjs'@'%'
+FLUSH PRIVILEGES;

@@ -1,0 +1,46 @@
+html {
+  overflow-y: auto;
+}
+.swagger-ui .topbar {
+  background: #edeff6;
+}
+.swagger-ui .topbar a {
+  height: 50px;
+  max-width: 50px;
+  background: url(/assets/images/logo.png);
+  background-size: cover;
+  display: block;
+  border-radius: 50%;
+}
+.swagger-ui .topbar a svg {
+  display: none;
+}
+
+.swagger-ui .information-container.wrapper {
+  height: 250px;
+  max-width: unset;
+  background: url('/assets/images/background.jpg');
+  background-size: cover;
+  background-position-x: center;
+  background-position-y: 400px;
+}
+.swagger-ui .information-container.wrapper > section {
+  max-width: 1420px;
+  margin: auto;
+}
+.swagger-ui .information-container.wrapper .info {
+  padding: 80px 0;
+  margin: 0;
+}
+.swagger-ui .information-container.wrapper .info .title {
+  color: #fff;
+  text-shadow: 1px 1px 2px #052e0a;
+}
+.swagger-ui .information-container.wrapper .description .renderedMarkdown > p {
+  color: #fff;
+  text-shadow: 1px 1px 2px #052e0a;
+  font-size: 16px;
+}
+.swagger-ui .scheme-container {
+  background: #edeff6;
+}
