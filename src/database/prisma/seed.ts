@@ -1,8 +1,9 @@
 import { PrismaClient } from '@prisma/client';
-import { seedUser } from './seeders/user.seeder';
+import { seedUser } from './seeders';
+
 const prisma = new PrismaClient();
 
-const main = async () => seedUser();
+const main = async () => seedUser(prisma);
 
 main()
   .then(async () => {

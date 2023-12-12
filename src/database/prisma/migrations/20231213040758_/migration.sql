@@ -4,9 +4,8 @@ CREATE TABLE `users` (
     `email` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
-    `loginAt` DATETIME(3) NULL,
-    `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-    `updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+    `createdAt` TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` TIMESTAMP(3) NOT NULL,
 
     UNIQUE INDEX `users_id_key`(`id`),
     UNIQUE INDEX `users_email_key`(`email`),
@@ -20,10 +19,13 @@ CREATE TABLE `user_devices` (
     `userId` VARCHAR(191) NOT NULL,
     `accessToken` TEXT NOT NULL,
     `refreshToken` TEXT NOT NULL,
-    `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-    `updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+    `createdAt` TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` TIMESTAMP(3) NOT NULL,
 
     UNIQUE INDEX `user_devices_id_key`(`id`),
     UNIQUE INDEX `user_devices_deviceId_userId_key`(`deviceId`, `userId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `user_devices` ADD CONSTRAINT `user_devices_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

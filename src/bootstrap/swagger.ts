@@ -5,6 +5,7 @@ import {
   SwaggerModule,
 } from '@nestjs/swagger';
 import basicAuth from 'express-basic-auth';
+import { isProduction } from '@/common';
 
 export const useSwaggerDocs = (
   appConfig: AppConfig,
@@ -32,15 +33,17 @@ export const useSwaggerDocs = (
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
 
-  app.use(
-    ['/docs', '/docs-json'],
-    basicAuth({
-      challenge: true,
-      users: {
-        dongtt: '123456',
-      },
-    }),
-  );
+  if (isProduction()) {
+    app.use(
+      ['/docs', '/docs-json'],
+      basicAuth({
+        challenge: true,
+        users: {
+          dongtt: '123456',
+        },
+      }),
+    );
+  }
 
   SwaggerModule.setup('docs', app, document, options);
 };
