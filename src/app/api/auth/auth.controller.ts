@@ -3,11 +3,9 @@ import { ApiTags } from '@nestjs/swagger';
 import { ExtractJwt } from 'passport-jwt';
 import { ApiUnauthenticatedResponse, ApiBadRequestResponse } from '@/common';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
+import { LoginDto, RefreshTokenDto } from './dto';
+import { AuthTokenEntity, LogoutEntity } from './entities';
 import { ApiAuthGuard, ApiLocalAuthGuard } from './guards';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { AuthTokenEntity } from './entities/auth-token.entity';
-import { LogoutEntity } from './entities/logout.entity';
 
 @ApiTags('Auth')
 @Controller('auth')

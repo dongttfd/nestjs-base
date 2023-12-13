@@ -8,8 +8,16 @@ module.exports = {
   plugins: ['@typescript-eslint/eslint-plugin'],
   extends: [
     'plugin:@typescript-eslint/recommended',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
     // 'plugin:prettier/recommended',
   ],
+  settings: {
+    'import/resolver': {
+      typescript: true,
+      node: true
+    }
+  },
   root: true,
   env: {
     node: true,
@@ -25,6 +33,38 @@ module.exports = {
     /**
      * CUSTOMIZATION
      */
+    "import/order": [
+      "error",
+      {
+        "newlines-between": "never",
+        "groups": [
+          "external",
+          "builtin",
+          "internal",
+          "parent",
+          "sibling",
+          "index",
+          "object",
+          "type"
+        ],
+        "pathGroups": [
+          {
+            "pattern": "@/common",
+            "group": "builtin",
+            "position": "after"
+          },
+          {
+            "pattern": "@/config",
+            "group": "builtin",
+            "position": "after"
+          },
+        ],
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ],
     'new-parens': 1,
     'no-bitwise': 1,
     'no-redeclare': 1,

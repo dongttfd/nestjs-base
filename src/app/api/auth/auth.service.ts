@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { UserService } from '@/app/api/user/user.service';
-import * as bcrypt from 'bcrypt';
-import { User } from '@prisma/client';
-import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { User } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 import { UnauthenticatedException } from '@/common';
+import { UserService } from '@/app/api/user/user.service';
 import { UserDeviceService } from '@/app/api/user-device/user-device.service';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { RefreshTokenDto } from '../auth/dto/refresh-token.dto';
 
 @Injectable()
 export class AuthService {

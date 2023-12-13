@@ -6,17 +6,16 @@ import {
 } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { json as jsonBodyParser } from 'body-parser';
 import { useContainer, ValidationError } from 'class-validator';
-import * as bodyParser from 'body-parser';
-import dotenv from 'dotenv';
+import { config as dotenvConfig } from 'dotenv';
 import { expand } from 'dotenv-expand';
-
-import { configApp, cors } from '@/config';
 import { getLogLevels } from '@/common';
+import { configApp, cors } from '@/config';
 import { useWebSocket } from './socket';
 import { useSwaggerDocs } from './swagger';
 
-expand(dotenv.config());
+expand(dotenvConfig());
 const appConfig = configApp();
 
 const useValidation = (app: INestApplication, module: Type) => {
@@ -50,7 +49,7 @@ export default async (module: Type, includeSocket = false) => {
   useValidation(app, module);
 
   // enable cors and json for express
-  app.use(bodyParser.json({ limit: appConfig.bodyJsonSizeLimit }));
+  app.use(jsonBodyParser({ limit: appConfig.bodyJsonSizeLimit }));
   app.enableCors(cors);
 
   // start with websocket

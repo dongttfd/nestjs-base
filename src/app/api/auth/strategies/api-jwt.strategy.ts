@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Request } from 'express';
+import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UnauthenticatedException } from '@/common';
 import { API_JWT_GUARD_NAME } from '@/config';
 import { UserService } from '@/app/api/user/user.service';

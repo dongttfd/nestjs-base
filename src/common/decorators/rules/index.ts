@@ -1,5 +1,5 @@
-import Match from './match.decorator';
 import Greater from './greater.decorator';
+import Match from './match.decorator';
 import ValidTimeStamp from './valid-timestamp.decorator';
 
-export { Match, Greater, ValidTimeStamp };
+export { Greater, Match, ValidTimeStamp };

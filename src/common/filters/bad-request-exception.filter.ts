@@ -1,10 +1,10 @@
-import { BaseExceptionFilter } from '@nestjs/core';
 import {
   ArgumentsHost,
   BadRequestException,
   Catch,
   HttpStatus,
 } from '@nestjs/common';
+import { BaseExceptionFilter } from '@nestjs/core';
 import { CODES } from '@/config';
 
 @Catch(BadRequestException)

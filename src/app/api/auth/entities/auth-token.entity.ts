@@ -1,5 +1,5 @@
-import { SuccessEntity } from '@/common';
 import { ApiProperty } from '@nestjs/swagger';
+import { SuccessEntity } from '@/common';
 
 export class AuthTokenEntity extends SuccessEntity<AuthToken> {
   @ApiProperty({

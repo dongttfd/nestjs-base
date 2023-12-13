@@ -1,7 +1,7 @@
-import { WsAdapter } from '@nestjs/platform-ws';
-import { IncomingMessage } from 'http';
 import { faker } from '@faker-js/faker';
+import { WsAdapter } from '@nestjs/platform-ws';
 import * as WebSocket from 'ws';
+import { IncomingMessage } from 'http';
 import {
   SOCKET_INCOMING_MESSAGE_PROPERTY,
   SOCKET_UUID,
