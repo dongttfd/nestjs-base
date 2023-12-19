@@ -15,7 +15,6 @@
     ],
     "assets": [
       "**/*.hbs",
-      "storage/data",
       "public/**/*"
     ],
     "watchAssets": true

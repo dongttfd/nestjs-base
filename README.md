@@ -11,6 +11,8 @@ node: >= 16+
 - Run `npm run start:dev` when developing
 - Build: `npm run build`
 
+**For developer, setup** `husky`: `npm run prepare`
+
 ### DB
 - use [Prisma](https://www.prisma.io/)
 ```
@@ -26,4 +28,5 @@ MYSQL_DB=prisma
 - Migrate: `npx prisma migrate`;
 - Update migration file `npx prisma migrate dev`
 - Reset: `npx prisma migrate reset`
-- Seed: `npm prisma db seed`
+- Seed: `npx prisma db seed`
+- Sync schema to Prisma models: `npx prisma generate`
