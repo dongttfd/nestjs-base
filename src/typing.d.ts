@@ -1,3 +1,4 @@
+// Configuration
 interface DatabaseConfig {
   host: string;
   port: number;
@@ -47,7 +48,7 @@ interface AppConfig {
 interface BaseResponse<T> {
   statusCode: number;
   message: string | string[];
-  data?: T | T[];
+  data?: T;
   error?: string;
 }
 
@@ -68,11 +69,6 @@ type Pagination<T> = Collection<T> & {
   nextPage: number;
 };
 
-type PaginationParams = {
-  page: number;
-  limit: number;
-};
-
 type SortParams = {
   sortBy: string;
   sortDirection: string;
@@ -83,20 +79,42 @@ type SortOption = {
   sort: number;
 };
 
+type PaginationParams = {
+  page: number;
+  limit?: number;
+};
+
+type PaginatedResult<T> = {
+  data: T[];
+  meta: {
+    total: number;
+    page: number;
+    itemPerPage: number;
+    prevPage: number | null;
+    nextPage: number | null;
+    lastPage: number;
+  };
+};
+
+type PaginateFunction = <T, K>(
+  model: any,
+  args?: K,
+  options?: PaginationParams,
+) => Promise<PaginatedResult<T>>;
+
+// JWT
 type JwtException<T> = Error<T>;
-
 type UnknownException<T> = Error<T>;
-
 type JwtPayload = {
   id: string;
   deviceId: string;
 };
-
 type AuthToken = {
   accessToken: string;
   refreshToken: string;
 };
 
+// Permission
 type PermissionMetadata = {
   key: string;
   name: string;

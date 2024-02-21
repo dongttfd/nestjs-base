@@ -14,9 +14,9 @@ export class SuccessEntity<T> {
   @ApiProperty()
   message = 'success';
 
-  data: T | T[];
+  data?: T;
 
-  constructor(data: T | T[]) {
+  constructor(data: T) {
     this.data = data;
   }
 }

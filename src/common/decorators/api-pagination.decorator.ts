@@ -7,28 +7,55 @@ import {
   SORT_DESC,
 } from '@/config';
 
-export const ApiPagination = () =>
-  applyDecorators(
-    ApiQuery({
-      name: 'pagination',
-      required: false,
-      enum: Object.values(BOOLEAN_PARAM),
-      description:
-        'If pagination is set to 0, it will return all data without adding limit condition. (Default: 1)',
-    }),
-    ApiQuery({
-      name: 'page',
-      required: false,
-      example: 1,
-      description: 'Start page: 1',
-    }),
-    ApiQuery({
-      name: 'limit',
-      required: false,
-      example: 10,
-      description: `Default ${DEFAULT_LIMIT_PAGINATION}`,
-    }),
-  );
+interface ApiPaginationParams {
+  pagination?: boolean;
+  page?: boolean;
+  limit?: boolean;
+}
+
+export const ApiPagination = ({
+  pagination = false,
+  page = true,
+  limit = true,
+}: ApiPaginationParams) => {
+  const decorators = [];
+
+  if (pagination) {
+    decorators.push(
+      ApiQuery({
+        name: 'pagination',
+        required: false,
+        enum: Object.values(BOOLEAN_PARAM),
+        description:
+          'If pagination is set to 0, it will return all data without adding limit condition. (Default: 1)',
+      }),
+    );
+  }
+
+  if (page) {
+    decorators.push(
+      ApiQuery({
+        name: 'page',
+        required: false,
+        example: 1,
+        description: 'Start page: 1',
+      }),
+    );
+  }
+
+  if (limit) {
+    decorators.push(
+      ApiQuery({
+        name: 'limit',
+        required: false,
+        example: 10,
+        description: `Default ${DEFAULT_LIMIT_PAGINATION}`,
+      }),
+    );
+  }
+
+  return applyDecorators(...decorators);
+};
 
 export const ApiSort = (allowSortFields?: string[]) =>
   applyDecorators(

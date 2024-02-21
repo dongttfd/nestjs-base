@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { SuccessEntity } from './success.entity';
 
 export class CollectionEntity<T>
-  extends SuccessEntity<T>
+  extends SuccessEntity<T[]>
   implements Collection<T>
 {
   @ApiProperty({ isArray: true })
