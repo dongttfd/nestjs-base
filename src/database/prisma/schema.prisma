@@ -36,3 +36,29 @@ model UserDevice {
   @@unique([deviceId, userId])
   @@map("user_devices")
 }
+
+model Investment {
+  id        String   @id @unique @default(uuid())
+  userId    String
+  title     String
+  amount    BigInt
+  date      DateTime
+  createdAt DateTime @default(now()) @db.Timestamp(3)
+  updatedAt DateTime @updatedAt @db.Timestamp(3)
+
+  @@index([userId])
+  @@map("investments")
+}
+
+model Consumption {
+  id        String   @id @unique @default(uuid())
+  userId    String
+  title     String
+  amount    BigInt
+  date      DateTime
+  createdAt DateTime @default(now()) @db.Timestamp(3)
+  updatedAt DateTime @updatedAt @db.Timestamp(3)
+
+  @@index([userId])
+  @@map("consumptions")
+}

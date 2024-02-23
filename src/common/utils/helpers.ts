@@ -10,3 +10,10 @@ export const isTesting = () => process.env.NODE_ENV === Environment.TESTING;
 export const getJwtFromRequest = (req: Request) => {
   return req.headers['authorization']?.split(' ')[1] || null;
 };
+
+// check ensure date with string type is date and return date else return undefined
+export const ensureDate = (date?: Date) => {
+  const dateObj = new Date(date);
+
+  return isNaN(dateObj.getTime()) ? undefined : dateObj;
+};
