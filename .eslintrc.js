@@ -33,35 +33,31 @@ module.exports = {
     /**
      * CUSTOMIZATION
      */
-    "import/order": [
-      "error",
+    'import/order': [
+      'error',
       {
-        "newlines-between": "never",
-        "groups": [
-          "external",
-          "builtin",
-          "internal",
-          "parent",
-          "sibling",
-          "index",
-          "object",
-          "type"
+        'newlines-between': 'never',
+        groups: [
+          'external',
+          'builtin',
+          'internal',
+          'object',
+          'type',
+          ['parent', 'sibling', 'index'],
         ],
-        "pathGroups": [
-          {
-            "pattern": "@/common",
-            "group": "builtin",
-            "position": "after"
-          },
-          {
-            "pattern": "@/config",
-            "group": "builtin",
-            "position": "after"
-          },
+        'pathGroups': [
+          { pattern: '@/common', group: 'internal', position: 'before' },
+          { pattern: '@/config', group: 'internal', position: 'before' },
+          { pattern: '@/common/**', group: 'internal', position: 'before' },
+          { pattern: '@/config/**', group: 'internal', position: 'before' },
+          { pattern: '@/**', group: 'internal', position: 'before' },
+          { pattern: './**', group: 'sibling', position: 'before' },
         ],
-        "alphabetize": {
-          "order": "asc",
-          "caseInsensitive": true
+        warnOnUnassignedImports: true,
+        pathGroupsExcludedImportTypes: ['builtin'],
+        alphabetize: {
+          order: 'asc',
+          caseInsensitive: true
         }
       }
     ],
@@ -141,7 +137,7 @@ module.exports = {
     ],
     'arrow-parens': [
       1,
-      'as-needed',
+      'always',
       {
         'requireForBlockBody': true
       }
@@ -211,6 +207,8 @@ module.exports = {
     'semi-spacing': 'warn',
     'no-empty': 'warn',
     'no-else-return': 'warn',
-    'semi': 'warn'
+    'semi': 'warn',
+    'no-multiple-empty-lines': ['error', { 'max': 1 }],
+    'newline-before-return': 'error'
   },
 };

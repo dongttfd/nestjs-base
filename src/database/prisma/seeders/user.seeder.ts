@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { HASH_ROUND } from '@/config/auth';
 
 export const seedUser = (prisma: PrismaClient) =>

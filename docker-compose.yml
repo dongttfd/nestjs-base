@@ -23,7 +23,7 @@ services:
       PMA_PORT: ${MYSQL_PORT}
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "8080:80"
+      - "8888:80"
 
 volumes:
   mariadb_data:

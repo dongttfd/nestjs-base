@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { UnauthenticatedException } from '@/common';
 import { UserService } from '@/app/api/user/user.service';
 import { UserDeviceService } from '@/app/api/user-device/user-device.service';
@@ -66,7 +66,7 @@ export class AuthService {
         secret ? { secret } : undefined,
       );
     } catch (e: JwtException<unknown>) {
-      throw new UnauthenticatedException();
+      throw new UnauthenticatedException(e.message);
     }
 
     return jwtDecoded;

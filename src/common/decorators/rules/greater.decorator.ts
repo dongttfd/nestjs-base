@@ -11,6 +11,7 @@ class GreaterConstraint implements ValidatorConstraintInterface {
   validate(value: unknown, args: ValidationArguments) {
     const [relatedPropertyName] = args.constraints;
     const relatedValue = (args.object as unknown)[relatedPropertyName];
+
     return value > relatedValue;
   }
 

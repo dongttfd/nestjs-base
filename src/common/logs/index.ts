@@ -5,6 +5,7 @@ export const getLogLevels = (): LogLevel[] => {
   if (isProduction()) {
     return ['log', 'warn', 'error'];
   }
+
   return ['error', 'warn', 'log', 'verbose', 'debug'];
 };
 

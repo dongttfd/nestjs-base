@@ -30,3 +30,6 @@ MYSQL_DB=prisma
 - Reset: `npx prisma migrate reset`
 - Seed: `npx prisma db seed`
 - Sync schema to Prisma models: `npx prisma generate`
+
+### API: Swagger
+- Swagger UI: `<your url>/docs`
