@@ -28,3 +28,5 @@ export const DEFAULT_PAGINATION_PARAMS: PaginationParams = {
   page: 1,
   limit: DEFAULT_LIMIT_PAGINATION,
 };
+
+export const VIETNAM_PHONE_NUMBER_REGEX = /^0(3|5|7|8|9)[0-9]{8}$/;

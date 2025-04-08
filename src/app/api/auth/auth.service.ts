@@ -17,8 +17,8 @@ export class AuthService {
     private userDeviceService: UserDeviceService,
   ) {}
 
-  async validateUser(email: string, password: string) {
-    const user = await this.userService.findFirst({ email });
+  async validateUser(loginId: string, password: string) {
+    const user = await this.userService.findFirst({ OR: [{ email: loginId }, { phone: loginId }] });
 
     return user && bcrypt.compareSync(password, user.password) ? user : null;
   }

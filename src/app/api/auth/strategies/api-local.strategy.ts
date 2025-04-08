@@ -11,13 +11,13 @@ export class ApiLocalStrategy extends PassportStrategy(
 ) {
   constructor(private readonly authService: AuthService) {
     super({
-      usernameField: 'email',
+      usernameField: 'loginId',
     });
   }
 
-  async validate(email: string, password: string) {
+  async validate(loginId: string, password: string) {
     const user = await this.authService.validateUser(
-      email.toLowerCase(),
+      loginId.toLowerCase(),
       password,
     );
 

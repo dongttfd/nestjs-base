@@ -8,7 +8,8 @@ export const seedUser = (prisma: PrismaClient) =>
     update: {},
     create: {
       email: 'dongtt.fd@gmail.com',
-      password: bcrypt.hashSync('123456', HASH_ROUND),
+      phone: '0368368368',
+      password: bcrypt.hashSync('12345678', HASH_ROUND),
       name: 'Tran Dong',
     },
   });
