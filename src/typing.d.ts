@@ -84,16 +84,18 @@ type PaginationParams = {
   limit?: number;
 };
 
+type PaginatedMeta = {
+  total: number;
+  page: number;
+  itemPerPage: number;
+  prevPage: number | null;
+  nextPage: number | null;
+  lastPage: number;
+};
+
 type PaginatedResult<T> = {
   data: T[];
-  meta: {
-    total: number;
-    page: number;
-    itemPerPage: number;
-    prevPage: number | null;
-    nextPage: number | null;
-    lastPage: number;
-  };
+  meta: PaginatedMeta
 };
 
 type PaginateFunction = <T, K>(

@@ -209,6 +209,12 @@ module.exports = {
     'no-else-return': 'warn',
     'semi': 'warn',
     'no-multiple-empty-lines': ['error', { 'max': 1 }],
-    'newline-before-return': 'error'
+    'newline-before-return': 'error',
+    'no-restricted-imports': [
+      'error',
+      {
+        patterns: ['../*'],
+      },
+    ]
   },
 };

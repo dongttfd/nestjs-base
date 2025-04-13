@@ -4,9 +4,9 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { UnauthenticatedException } from '@/common';
+import { RefreshTokenDto } from '@/app/api/auth/dto/refresh-token.dto';
 import { UserService } from '@/app/api/user/user.service';
 import { UserDeviceService } from '@/app/api/user-device/user-device.service';
-import { RefreshTokenDto } from '../auth/dto/refresh-token.dto';
 
 @Injectable()
 export class AuthService {
