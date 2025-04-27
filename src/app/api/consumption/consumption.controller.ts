@@ -15,6 +15,7 @@ import { ApiAuthGuard } from '@/app/api/auth/guards';
 import { ConsumptionService } from './consumption.service';
 import { CreateConsumptionDto } from './dto/create-consumption.dto';
 import { UpdateConsumptionDto } from './dto/update-consumption.dto';
+import { ConsumptionAmountGroupDateCollectionEntity } from './entities/consumption-amount-group-date-collection.entity';
 import { ConsumptionPaginationEntity } from './entities/consumption-pagination.entity';
 import { ConsumptionSuccessEntity } from './entities/consumption-success.entity';
 
@@ -91,6 +92,17 @@ export class ConsumptionController {
   async destroy(@Request() request, @Param('id') id: string) {
     return new ConsumptionSuccessEntity(
       await this.consumptionService.destroy(request.user.id, id),
+    );
+  }
+
+  /**
+   * Consumption statistic
+   */
+  @ApiAuthGuard()
+  @Get('consumptions/statistic')
+  async getConsumptionStatistic(@Request() request) {
+    return new ConsumptionAmountGroupDateCollectionEntity(
+      await this.consumptionService.getConsumptionStatisticGrouped(request.user.id) as unknown as AmountGroupDate[]
     );
   }
 }

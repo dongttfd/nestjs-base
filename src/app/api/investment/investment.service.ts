@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Investment, Prisma } from '@prisma/client';
-import { PrismaService, ensureDate } from '@/common';
-import { DEFAULT_PAGINATION_PARAMS } from '@/config';
+import { addDays, format, subYears } from 'date-fns';
+import { PrismaService, ensureDate, sameMonth } from '@/common';
+import { DEFAULT_PAGINATION_PARAMS, MONTH_FORMAT } from '@/config';
 import { CreateInvestmentDto } from './dto/create-investment.dto';
 import { UpdateInvestmentDto } from './dto/update-investment.dto';
 
@@ -73,5 +74,43 @@ export class InvestmentService {
     await this.canAccessInvestment(userId, id);
 
     return this.prismaService.investment.delete({ where: { id } });
+  }
+
+  async getInvestmentStatisticGrouped(userId: string) {
+    return this.getStatisticByMonth(userId);
+  }
+
+  private async getStatisticByMonth(userId: string) {
+    const today = new Date();
+    const from = subYears(today, 1);
+    const to = addDays(today, 1);
+    from.setHours(0, 0, 0, 0);
+    to.setHours(0, 0, 0, 0);
+
+    const investments = await this.prismaService.investment.findMany({
+      where: {
+        userId,
+        date: {
+          lt: to,
+          gte: from
+        }
+      }
+    });
+
+    const result = investments.reduce((previous, currentValue) => {
+      const current = previous.find((pr) => sameMonth(pr.month, currentValue.date));
+      if (!current) {
+        previous.push({
+          month: format(currentValue.date, MONTH_FORMAT),
+          amount: Number(currentValue.amount)
+        });
+      } else {
+        current.amount += Number(currentValue.amount);
+      }
+
+      return previous;
+    }, [] as AmountGroupMonth[]);
+
+    return result;
   }
 }

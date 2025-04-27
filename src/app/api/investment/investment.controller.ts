@@ -14,6 +14,7 @@ import { ApiBadRequestResponse, ApiPagination, BodyWithParam } from '@/common';
 import { ApiAuthGuard } from '@/app/api/auth/guards';
 import { CreateInvestmentDto } from './dto/create-investment.dto';
 import { UpdateInvestmentDto } from './dto/update-investment.dto';
+import { InvestmentAmountGroupMonthCollectionEntity } from './entities/investment-amount-group-month-collection.entity';
 import { InvestmentPaginationEntity } from './entities/investment-pagination.entity';
 import { InvestmentSuccessEntity } from './entities/investment-success.entity';
 import { InvestmentService } from './investment.service';
@@ -91,6 +92,17 @@ export class InvestmentController {
   async destroy(@Request() request, @Param('id') id: string) {
     return new InvestmentSuccessEntity(
       await this.investmentService.destroy(request.user.id, id),
+    );
+  }
+
+  /**
+   * Investment statistic
+   */
+  @ApiAuthGuard()
+  @Get('investments/statistic')
+  async getInvestmentStatistic(@Request() request) {
+    return new InvestmentAmountGroupMonthCollectionEntity(
+      await this.investmentService.getInvestmentStatisticGrouped(request.user.id) as unknown as AmountGroupMonth[]
     );
   }
 }

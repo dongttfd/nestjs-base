@@ -132,3 +132,12 @@ type PermissionModel = {
   permissions: PermissionMetadata[];
 };
 
+type AmountGroupDate = {
+  date: string;
+  amount: number;
+};
+
+type AmountGroupMonth = {
+  month: string;
+  amount: number;
+};

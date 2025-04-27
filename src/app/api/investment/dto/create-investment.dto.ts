@@ -14,7 +14,7 @@ export class CreateInvestmentDto {
 
   @IsNotEmpty()
   @IsNumber()
-  @Min(0)
+  @Min(-1000000000000)
   @Max(1000000000000)
   amount: number;
 

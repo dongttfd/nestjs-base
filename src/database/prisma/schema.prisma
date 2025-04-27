@@ -62,3 +62,4 @@ model Consumption {
   @@index([userId])
   @@map("consumptions")
 }
+

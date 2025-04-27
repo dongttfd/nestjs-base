@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Consumption, Prisma } from '@prisma/client';
-import { PrismaService, ensureDate } from '@/common';
-import { DEFAULT_PAGINATION_PARAMS } from '@/config';
+import { addDays, format, subDays } from 'date-fns';
+import { PrismaService, ensureDate, sameDate } from '@/common';
+import { DATE_FORMAT, DEFAULT_PAGINATION_PARAMS, StatisticGroupBy } from '@/config';
 import { CreateConsumptionDto } from './dto/create-consumption.dto';
 import { UpdateConsumptionDto } from './dto/update-consumption.dto';
 
@@ -73,5 +74,59 @@ export class ConsumptionService {
     await this.canAccessConsumption(userId, id);
 
     return this.prismaService.consumption.delete({ where: { id } });
+  }
+
+  async getConsumptionStatisticGrouped(userId: string, groupBy = StatisticGroupBy.DAY) {
+    if (groupBy === StatisticGroupBy.YEAR) {
+      return this.getStatisticByYear();
+    }
+
+    if (groupBy === StatisticGroupBy.MONTH) {
+      return this.getStatisticByMonth();
+    }
+
+    return this.getStatisticByDay(userId);
+  }
+
+  private getStatisticByYear() {
+
+  }
+
+  private getStatisticByMonth() {
+
+  }
+
+  private async getStatisticByDay(userId: string) {
+    const today = new Date();
+    const from = subDays(today, 7);
+    const to = addDays(today, 1);
+    from.setHours(0, 0, 0, 0);
+    to.setHours(0, 0, 0, 0);
+
+    const consumptions = await this.prismaService.consumption.findMany({
+      where: {
+        userId,
+        date: {
+          lt: to,
+          gte: from
+        }
+      }
+    });
+
+    const result = consumptions.reduce((previous, currentValue) => {
+      const current = previous.find((pr) => sameDate(pr.date, currentValue.date));
+      if (!current) {
+        previous.push({
+          date: format(currentValue.date, DATE_FORMAT),
+          amount: Number(currentValue.amount)
+        });
+      } else {
+        current.amount += Number(currentValue.amount);
+      }
+
+      return previous;
+    }, [] as AmountGroupDate[]);
+
+    return result;
   }
 }
