@@ -24,7 +24,7 @@ export enum LogType {
 }
 
 export const DEFAULT_LIMIT_PAGINATION = 20;
-export const DEFAULT_PAGINATION_PARAMS: PaginationParams = {
+export const DEFAULT_PAGINATION_PARAMS = {
   page: 1,
   limit: DEFAULT_LIMIT_PAGINATION,
 };

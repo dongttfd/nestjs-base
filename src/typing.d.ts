@@ -84,6 +84,11 @@ type PaginationParams = {
   limit?: number;
 };
 
+type PaginationWithDateQueryParams = PaginationParams & {
+  date?: Date,
+  createdAt?: Date,
+}
+
 type PaginatedMeta = {
   total: number;
   page: number;
@@ -126,3 +131,4 @@ type PermissionModel = {
   group: PermissionMetadata;
   permissions: PermissionMetadata[];
 };
+

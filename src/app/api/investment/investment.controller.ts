@@ -21,7 +21,7 @@ import { InvestmentService } from './investment.service';
 @ApiTags('Investment')
 @Controller()
 export class InvestmentController {
-  constructor(private investmentService: InvestmentService) {}
+  constructor(private investmentService: InvestmentService) { }
 
   /**
    * Get investments pagination
@@ -32,19 +32,23 @@ export class InvestmentController {
     required: false,
     description: 'Date of last item',
   })
+  @ApiQuery({
+    name: 'createdAt',
+    type: Date,
+    required: false,
+    description: 'Created At of last item',
+  })
   @ApiPagination({})
   @ApiAuthGuard()
   @Get('investments')
   async list(
     @Request() request,
-    @Query() paginationParams: PaginationParams,
-    @Query('date') date?: Date,
+    @Query() paginationParams: PaginationWithDateQueryParams,
   ) {
     return new InvestmentPaginationEntity(
       await this.investmentService.paginate(
         request.user.id,
-        paginationParams,
-        date,
+        paginationParams
       ),
     );
   }

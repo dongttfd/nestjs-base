@@ -7,14 +7,14 @@ import { UpdateConsumptionDto } from './dto/update-consumption.dto';
 
 @Injectable()
 export class ConsumptionService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService) { }
 
   paginate(
     userId: string,
-    paginationParams = DEFAULT_PAGINATION_PARAMS,
-    date?: Date,
+    params: PaginationWithDateQueryParams = DEFAULT_PAGINATION_PARAMS,
   ) {
-    const beforeDate = ensureDate(date);
+    const date = ensureDate(params.date);
+    const createdAt = ensureDate(params.createdAt);
 
     return this.prismaService.paginator()<
       Consumption,
@@ -24,11 +24,15 @@ export class ConsumptionService {
       {
         where: {
           userId,
-          date: beforeDate ? { lte: beforeDate } : undefined,
+          ...(date && { date: { lt: date } }),
+          ...(createdAt && { createdAt: { lt: createdAt } }),
         },
-        orderBy: { date: Prisma.SortOrder.desc },
+        orderBy: [
+          { date: Prisma.SortOrder.desc },
+          { createdAt: Prisma.SortOrder.desc }
+        ],
       },
-      paginationParams,
+      params,
     );
   }
 

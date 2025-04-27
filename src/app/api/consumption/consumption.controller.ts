@@ -21,7 +21,7 @@ import { ConsumptionSuccessEntity } from './entities/consumption-success.entity'
 @ApiTags('Consumption')
 @Controller()
 export class ConsumptionController {
-  constructor(private consumptionService: ConsumptionService) {}
+  constructor(private consumptionService: ConsumptionService) { }
 
   /**
    * Get consumptions pagination
@@ -32,19 +32,23 @@ export class ConsumptionController {
     required: false,
     description: 'Date of last item',
   })
+  @ApiQuery({
+    name: 'createdAt',
+    type: Date,
+    required: false,
+    description: 'Created At of last item',
+  })
   @ApiPagination({})
   @ApiAuthGuard()
   @Get('consumptions')
   async list(
     @Request() request,
-    @Query() paginationParams: PaginationParams,
-    @Query('date') date?: Date,
+    @Query() params: PaginationWithDateQueryParams,
   ) {
     return new ConsumptionPaginationEntity(
       await this.consumptionService.paginate(
         request.user.id,
-        paginationParams,
-        date,
+        params
       ),
     );
   }
