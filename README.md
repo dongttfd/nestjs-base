@@ -33,3 +33,10 @@ MYSQL_DB=prisma
 
 ### API: Swagger
 - Swagger UI: `<your url>/docs`
+
+### Cloudflare tunnel
+- Install `cloudflared` on your local machine
+- Run `cloudflared tunnel create api` to create a tunnel
+- Run `cloudflared tunnel route dns api api.domain` to create a DNS record
+- Run `cloudflared tunnel run api` to start the tunnel
+- Run `cloudflared tunnel list` to list all tunnels

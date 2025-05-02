@@ -25,5 +25,14 @@ services:
     ports:
       - "8888:80"
 
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.dockerfile
+    ports:
+      - "8080:80"
+    restart: always
+    volumes:
+      - ../frontend/dist:/usr/share/nginx/html 
 volumes:
   mariadb_data:
