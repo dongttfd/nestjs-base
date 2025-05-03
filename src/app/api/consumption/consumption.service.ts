@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Consumption, Prisma } from '@prisma/client';
-import { addDays, format, subDays } from 'date-fns';
-import { PrismaService, ensureDate, sameDate } from '@/common';
-import { DATE_FORMAT, DEFAULT_PAGINATION_PARAMS, StatisticGroupBy } from '@/config';
+import { addDays, format, subDays, subYears } from 'date-fns';
+import { PrismaService, ensureDate } from '@/common';
+import { DATE_FORMAT, DEFAULT_PAGINATION_PARAMS, MONTH_FORMAT } from '@/config';
 import { CreateConsumptionDto } from './dto/create-consumption.dto';
 import { UpdateConsumptionDto } from './dto/update-consumption.dto';
 
@@ -76,27 +76,56 @@ export class ConsumptionService {
     return this.prismaService.consumption.delete({ where: { id } });
   }
 
-  async getConsumptionStatisticGrouped(userId: string, groupBy = StatisticGroupBy.DAY) {
-    if (groupBy === StatisticGroupBy.YEAR) {
-      return this.getStatisticByYear();
-    }
+  async getStatisticByYear(userId: string) {
+    const today = new Date();
+    const from = subYears(today, 10);
+    const to = addDays(today, 1);
+    from.setMonth(0);
+    from.setDate(1);
+    from.setHours(0, 0, 0, 0);
+    to.setHours(0, 0, 0, 0);
 
-    if (groupBy === StatisticGroupBy.MONTH) {
-      return this.getStatisticByMonth();
-    }
-
-    return this.getStatisticByDay(userId);
+    return this.prismaService.$queryRaw<AmountGroupYear[]>(Prisma.sql`SELECT EXTRACT(YEAR FROM date) AS year, SUM(amount) AS amount
+      FROM consumptions
+      where userId = ${userId}
+      AND date < ${to}
+      AND date >= ${from}
+      GROUP BY year
+      ORDER BY year ASC;
+    `);
   }
 
-  private getStatisticByYear() {
+  async getStatisticByMonth(userId: string) {
+    const today = new Date();
+    const from = new Date(today);
+    from.setMonth(from.getMonth() - 11);
+    from.setDate(1);
+    from.setHours(0, 0, 0, 0);
+    const to = addDays(today, 1);
+    to.setHours(0, 0, 0, 0);
 
+    const consumptions = await this.prismaService.consumption.findMany({
+      where: {
+        userId,
+        date: {
+          lt: to,
+          gte: from
+        }
+      }
+    });
+
+    const consumptionsDayMap = new Map<string, bigint>();
+    consumptions.forEach((consumption) => {
+      const dateKey = format(consumption.date, MONTH_FORMAT);
+      const currentAmount = consumptionsDayMap.get(dateKey) || BigInt(0);
+      consumptionsDayMap.set(dateKey, currentAmount + BigInt(consumption.amount));
+    });
+
+    return Array.from(consumptionsDayMap.entries())
+      .map(([month, amount]) => ({ month, amount }));
   }
 
-  private getStatisticByMonth() {
-
-  }
-
-  private async getStatisticByDay(userId: string) {
+  async getStatisticByDate(userId: string) {
     const today = new Date();
     const from = subDays(today, 7);
     const to = addDays(today, 1);
@@ -113,20 +142,15 @@ export class ConsumptionService {
       }
     });
 
-    const result = consumptions.reduce((previous, currentValue) => {
-      const current = previous.find((pr) => sameDate(pr.date, currentValue.date));
-      if (!current) {
-        previous.push({
-          date: format(currentValue.date, DATE_FORMAT),
-          amount: Number(currentValue.amount)
-        });
-      } else {
-        current.amount += Number(currentValue.amount);
-      }
+    const consumptionDayMap = new Map<string, bigint>();
+    consumptions.forEach((consumption) => {
+      const dateKey = format(consumption.date, DATE_FORMAT);
+      const currentAmount = consumptionDayMap.get(dateKey) || BigInt(0);
+      consumptionDayMap.set(dateKey, currentAmount + BigInt(consumption.amount));
+    });
 
-      return previous;
-    }, [] as AmountGroupDate[]);
-
-    return result;
+    return Array.from(consumptionDayMap.entries()).map(
+      ([date, amount]) => ({ date, amount })
+    );
   }
 }

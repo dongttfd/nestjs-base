@@ -16,6 +16,8 @@ import { ConsumptionService } from './consumption.service';
 import { CreateConsumptionDto } from './dto/create-consumption.dto';
 import { UpdateConsumptionDto } from './dto/update-consumption.dto';
 import { ConsumptionAmountGroupDateCollectionEntity } from './entities/consumption-amount-group-date-collection.entity';
+import { ConsumptionAmountGroupMonthCollectionEntity } from './entities/consumption-amount-group-month-collection.entity';
+import { ConsumptionAmountGroupYearCollectionEntity } from './entities/consumption-amount-group-year-collection.entity';
 import { ConsumptionPaginationEntity } from './entities/consumption-pagination.entity';
 import { ConsumptionSuccessEntity } from './entities/consumption-success.entity';
 
@@ -96,13 +98,35 @@ export class ConsumptionController {
   }
 
   /**
-   * Consumption statistic
+   * Consumption statistic by date
    */
   @ApiAuthGuard()
-  @Get('consumptions/statistic')
-  async getConsumptionStatistic(@Request() request) {
+  @Get('consumptions/statistic-by-date')
+  async getConsumptionStatisticByDate(@Request() request) {
     return new ConsumptionAmountGroupDateCollectionEntity(
-      await this.consumptionService.getConsumptionStatisticGrouped(request.user.id) as unknown as AmountGroupDate[]
+      await this.consumptionService.getStatisticByDate(request.user.id)
+    );
+  }
+
+  /**
+   * Consumption statistic by month
+   */
+  @ApiAuthGuard()
+  @Get('consumptions/statistic-by-month')
+  async getConsumptionStatisticByMonth(@Request() request) {
+    return new ConsumptionAmountGroupMonthCollectionEntity(
+      await this.consumptionService.getStatisticByMonth(request.user.id)
+    );
+  }
+
+  /**
+   * Consumption statistic by year
+   */
+  @ApiAuthGuard()
+  @Get('consumptions/statistic-by-year')
+  async getConsumptionStatisticByYear(@Request() request) {
+    return new ConsumptionAmountGroupYearCollectionEntity(
+      await this.consumptionService.getStatisticByYear(request.user.id)
     );
   }
 }

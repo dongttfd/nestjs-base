@@ -47,6 +47,8 @@ model Investment {
   updatedAt DateTime @updatedAt @db.Timestamp(3)
 
   @@index([userId])
+  @@index([date])
+  @@index([userId, date])
   @@map("investments")
 }
 
@@ -60,6 +62,8 @@ model Consumption {
   updatedAt DateTime @updatedAt @db.Timestamp(3)
 
   @@index([userId])
+  @@index([date])
+  @@index([userId, date])
   @@map("consumptions")
 }
 

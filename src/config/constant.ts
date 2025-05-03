@@ -31,11 +31,5 @@ export const DEFAULT_PAGINATION_PARAMS = {
 
 export const VIETNAM_PHONE_NUMBER_REGEX = /^0(3|5|7|8|9)[0-9]{8}$/;
 
-export enum StatisticGroupBy {
-  DAY = 'day',
-  MONTH = 'month',
-  WEEK = 'week',
-  YEAR = 'year',
-}
 export const DATE_FORMAT = 'yyyy-MM-dd';
 export const MONTH_FORMAT = 'yyyy-MM-01';

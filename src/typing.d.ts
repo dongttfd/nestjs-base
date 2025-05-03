@@ -134,10 +134,15 @@ type PermissionModel = {
 
 type AmountGroupDate = {
   date: string;
-  amount: number;
+  amount: bigint;
 };
 
 type AmountGroupMonth = {
   month: string;
-  amount: number;
+  amount: bigint;
+};
+
+type AmountGroupYear = {
+  year: string;
+  amount: bigint;
 };

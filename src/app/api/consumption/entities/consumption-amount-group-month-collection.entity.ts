@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CollectionEntity } from '@/common';
 
-class InvestmentAmountGroupMonthEntity {
+class ConsumptionAmountGroupMonthEntity {
 
   /**
    * @example '2025-05-05'
@@ -21,11 +21,11 @@ class InvestmentAmountGroupMonthEntity {
   }
 }
 
-export class InvestmentAmountGroupMonthCollectionEntity extends CollectionEntity<InvestmentAmountGroupMonthEntity> {
-  @ApiProperty({ type: [InvestmentAmountGroupMonthEntity] })
-  data: InvestmentAmountGroupMonthEntity[];
+export class ConsumptionAmountGroupMonthCollectionEntity extends CollectionEntity<ConsumptionAmountGroupMonthEntity> {
+  @ApiProperty({ type: [ConsumptionAmountGroupMonthEntity] })
+  data: ConsumptionAmountGroupMonthEntity[];
 
   constructor(amountGroupMonths: AmountGroupMonth[]) {
-    super(amountGroupMonths.map((amountGroupMonth) => new InvestmentAmountGroupMonthEntity(amountGroupMonth)));
+    super(amountGroupMonths.map((amountGroupMonth) => new ConsumptionAmountGroupMonthEntity(amountGroupMonth)));
   }
 }

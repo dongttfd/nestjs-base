@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Investment, Prisma } from '@prisma/client';
 import { addDays, format, subYears } from 'date-fns';
-import { PrismaService, ensureDate, sameMonth } from '@/common';
+import { PrismaService, ensureDate } from '@/common';
 import { DEFAULT_PAGINATION_PARAMS, MONTH_FORMAT } from '@/config';
 import { CreateInvestmentDto } from './dto/create-investment.dto';
 import { UpdateInvestmentDto } from './dto/update-investment.dto';
@@ -80,11 +80,32 @@ export class InvestmentService {
     return this.getStatisticByMonth(userId);
   }
 
-  private async getStatisticByMonth(userId: string) {
+  async getStatisticByYear(userId: string) {
     const today = new Date();
-    const from = subYears(today, 1);
+    const from = subYears(today, 10);
     const to = addDays(today, 1);
+    from.setMonth(0);
+    from.setDate(1);
     from.setHours(0, 0, 0, 0);
+    to.setHours(0, 0, 0, 0);
+
+    return this.prismaService.$queryRaw<AmountGroupYear[]>(Prisma.sql`SELECT EXTRACT(YEAR FROM date) AS year, SUM(amount) AS amount
+        FROM investments
+        where userId = ${userId}
+        AND date < ${to}
+        AND date >= ${from}
+        GROUP BY year
+        ORDER BY year ASC;
+      `);
+  }
+
+  async getStatisticByMonth(userId: string) {
+    const today = new Date();
+    const from = new Date(today);
+    from.setMonth(from.getMonth() - 11);
+    from.setDate(1);
+    from.setHours(0, 0, 0, 0);
+    const to = addDays(today, 1);
     to.setHours(0, 0, 0, 0);
 
     const investments = await this.prismaService.investment.findMany({
@@ -97,20 +118,14 @@ export class InvestmentService {
       }
     });
 
-    const result = investments.reduce((previous, currentValue) => {
-      const current = previous.find((pr) => sameMonth(pr.month, currentValue.date));
-      if (!current) {
-        previous.push({
-          month: format(currentValue.date, MONTH_FORMAT),
-          amount: Number(currentValue.amount)
-        });
-      } else {
-        current.amount += Number(currentValue.amount);
-      }
+    const investmentsDayMap = new Map<string, bigint>();
+    investments.forEach((investment) => {
+      const dateKey = format(investment.date, MONTH_FORMAT);
+      const currentAmount = investmentsDayMap.get(dateKey) || BigInt(0);
+      investmentsDayMap.set(dateKey, currentAmount + BigInt(investment.amount));
+    });
 
-      return previous;
-    }, [] as AmountGroupMonth[]);
-
-    return result;
+    return Array.from(investmentsDayMap.entries())
+      .map(([month, amount]) => ({ month, amount }));
   }
 }

@@ -17,7 +17,7 @@ class ConsumptionAmountGroupDateEntity {
 
   constructor(amountGroupDate: AmountGroupDate) {
     this.date = amountGroupDate.date;
-    this.amount = amountGroupDate.amount;
+    this.amount = Number(amountGroupDate.amount);
   }
 }
 

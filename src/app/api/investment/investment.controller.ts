@@ -15,6 +15,7 @@ import { ApiAuthGuard } from '@/app/api/auth/guards';
 import { CreateInvestmentDto } from './dto/create-investment.dto';
 import { UpdateInvestmentDto } from './dto/update-investment.dto';
 import { InvestmentAmountGroupMonthCollectionEntity } from './entities/investment-amount-group-month-collection.entity';
+import { InvestmentAmountGroupYearCollectionEntity } from './entities/investment-amount-group-year-collection.entity';
 import { InvestmentPaginationEntity } from './entities/investment-pagination.entity';
 import { InvestmentSuccessEntity } from './entities/investment-success.entity';
 import { InvestmentService } from './investment.service';
@@ -96,13 +97,24 @@ export class InvestmentController {
   }
 
   /**
-   * Investment statistic
+   * Investment statistic by month
    */
   @ApiAuthGuard()
-  @Get('investments/statistic')
-  async getInvestmentStatistic(@Request() request) {
+  @Get('investments/statistic-by-month')
+  async getInvestmentStatisticMonth(@Request() request) {
     return new InvestmentAmountGroupMonthCollectionEntity(
-      await this.investmentService.getInvestmentStatisticGrouped(request.user.id) as unknown as AmountGroupMonth[]
+      await this.investmentService.getStatisticByMonth(request.user.id)
+    );
+  }
+
+  /**
+   * Investment statistic by year
+   */
+  @ApiAuthGuard()
+  @Get('investments/statistic-by-year')
+  async getInvestmentStatisticYear(@Request() request) {
+    return new InvestmentAmountGroupYearCollectionEntity(
+      await this.investmentService.getStatisticByYear(request.user.id)
     );
   }
 }
