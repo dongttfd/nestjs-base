@@ -45,3 +45,4 @@ MYSQL_DB=prisma
 - Run `cloudflared tunnel route dns api api.domain` to create a DNS record
 - Run `cloudflared tunnel run api` to start the tunnel
 - Run `cloudflared tunnel list` to list all tunnels
+- Change `~/.cloudflared/config.yml` to add more subdomain

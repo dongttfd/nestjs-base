@@ -41,7 +41,7 @@ export class AuthService {
   async refreshToken({ refreshToken, deviceId }: RefreshTokenDto) {
     const jwtDecoded = this.decodeJwt(
       refreshToken,
-      this.configService.get<string>('jwtAdminRefreshSecret'),
+      this.configService.get<string>('jwt.refreshSecret'),
     );
 
     const user = await this.userService.findById(jwtDecoded?.id);
