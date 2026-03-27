@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { StringValue } from 'ms';
 import { UserModule } from '@/app/api/user/user.module';
 import { UserDeviceModule } from '@/app/api/user-device/user-device.module';
 import { AuthController } from './auth.controller';
@@ -11,12 +13,13 @@ import { ApiJwtStrategy, ApiLocalStrategy } from './strategies';
   imports: [
     UserModule,
     UserDeviceModule,
+    PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('jwt.secret'),
         signOptions: {
-          expiresIn: configService.get<string>('jwt.expiration'),
+          expiresIn: configService.get<string>('jwt.expiration') as StringValue,
         },
       }),
       inject: [ConfigService],

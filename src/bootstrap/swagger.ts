@@ -10,36 +10,36 @@ import { isProduction } from '@/common';
 export const useSwaggerDocs = (
   appConfig: AppConfig,
   app: INestApplication,
-  resource: string,
 ) => {
+  const swagger = appConfig.swagger;
   const swaggerConfig = new DocumentBuilder()
-    .setTitle(appConfig?.swagger[resource]?.title || 'API documentation')
-    .setDescription(
-      appConfig?.swagger[resource]?.description || 'The API documentation',
-    )
-    .setVersion(appConfig?.swagger[resource]?.version || '0.0.0-dev')
-    .addTag(appConfig?.swagger[resource]?.tag || 'API')
+    .setTitle(swagger?.title || 'API documentation')
+    .setDescription(swagger?.description || 'The API documentation')
+    .setVersion(swagger?.version || '0.0.0-dev')
+    .addTag(swagger?.tag || 'API')
     .addBearerAuth({
       type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
       description: 'Enter JWT access token',
     })
     .build();
 
   const options: SwaggerCustomOptions = {
-    customSiteTitle: appConfig?.swagger[resource]?.title || 'API documentation',
+    customSiteTitle: swagger?.title || 'API documentation',
     customfavIcon: '/favicon.ico',
     customCssUrl: '/assets/css/swagger.css',
   };
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
 
-  if (isProduction()) {
+  if (isProduction() && swagger?.authUserName && swagger?.authPassword) {
     app.use(
       ['/docs', '/docs-json'],
       basicAuth({
         challenge: true,
         users: {
-          dongtt: '123456',
+          [swagger.authUserName]: swagger.authPassword,
         },
       }),
     );

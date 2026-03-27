@@ -26,11 +26,13 @@ export class UserDeviceService {
   }
 
   delete(userId: string, deviceId: string) {
-    return this.prismaService.userDevice.delete({
-      where: {
-        // eslint-disable-next-line camelcase
-        deviceId_userId: { userId, deviceId },
-      },
-    });
+    return this.prismaService.userDevice
+      .deleteMany({
+        where: {
+          userId,
+          deviceId,
+        },
+      })
+      .then(({ count }) => count > 0);
   }
 }

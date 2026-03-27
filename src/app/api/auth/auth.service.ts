@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import { StringValue } from 'ms';
 import { UnauthenticatedException } from '@/common';
 import { RefreshTokenDto } from '@/app/api/auth/dto/refresh-token.dto';
 import { UserService } from '@/app/api/user/user.service';
@@ -18,7 +19,9 @@ export class AuthService {
   ) {}
 
   async validateUser(loginId: string, password: string) {
-    const user = await this.userService.findFirst({ OR: [{ email: loginId }, { phone: loginId }] });
+    const user = await this.userService.findFirst({
+      OR: [{ email: loginId }, { phone: loginId }],
+    });
 
     return user && bcrypt.compareSync(password, user.password) ? user : null;
   }
@@ -35,13 +38,13 @@ export class AuthService {
       throw new UnauthenticatedException();
     }
 
-    return !!this.userDeviceService.delete(user.id, jwtDecoded?.deviceId);
+    return this.userDeviceService.delete(user.id, jwtDecoded?.deviceId);
   }
 
   async refreshToken({ refreshToken, deviceId }: RefreshTokenDto) {
     const jwtDecoded = this.decodeJwt(
       refreshToken,
-      this.configService.get<string>('jwtAdminRefreshSecret'),
+      this.configService.get<string>('jwt.refreshSecret'),
     );
 
     const user = await this.userService.findById(jwtDecoded?.id);
@@ -82,7 +85,9 @@ export class AuthService {
       accessToken: this.jwtService.sign(jwtPayload),
       refreshToken: this.jwtService.sign(jwtPayload, {
         secret: this.configService.get<string>('jwt.refreshSecret'),
-        expiresIn: this.configService.get<string>('jwt.refreshExpiration'),
+        expiresIn: this.configService.get<string>(
+          'jwt.refreshExpiration',
+        ) as StringValue,
       }),
     };
 

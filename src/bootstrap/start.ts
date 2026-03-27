@@ -39,11 +39,10 @@ export default async (module: Type, includeSocket = false) => {
 
   const resource = module.name.replace('Module', '').toLowerCase();
 
-  // prefix resource wit module
-  app.setGlobalPrefix(`${resource}/`, { exclude: [`/${resource}`] });
+  app.setGlobalPrefix(resource);
 
   // use swagger api document
-  useSwaggerDocs(appConfig, app, resource);
+  useSwaggerDocs(appConfig, app);
 
   // use validation
   useValidation(app, module);

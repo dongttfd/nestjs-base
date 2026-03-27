@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
-import { WsAdapter } from '@nestjs/platform-ws';
+import { WebSocketAdapter, WsMessageHandler } from '@nestjs/common';
+import { Observable } from 'rxjs';
 import * as WebSocket from 'ws';
 import { IncomingMessage } from 'http';
 import {
@@ -8,7 +9,20 @@ import {
   WebsocketEvent,
 } from '@/config';
 
-export class SocketAdapter extends WsAdapter {
+/* eslint-disable @typescript-eslint/no-unused-vars */
+export class SocketAdapter implements WebSocketAdapter {
+  create(port: number, options?: any): any {
+    throw new Error('Method not implemented.');
+  }
+  bindClientDisconnect?(client: any, callback: () => void) {
+    throw new Error('Method not implemented.');
+  }
+  bindMessageHandlers(client: any, handlers: WsMessageHandler[], transform: (data: any) => Observable<any>) {
+    throw new Error('Method not implemented.');
+  }
+  close(server: any) {
+    throw new Error('Method not implemented.');
+  }
   bindClientConnect(
     server: WebSocket.Server,
     callback: (socket, request: IncomingMessage) => void,
