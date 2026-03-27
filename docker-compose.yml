@@ -33,6 +33,21 @@ services:
       - "8080:80"
     restart: always
     volumes:
-      - ../frontend/dist:/usr/share/nginx/html 
+      - ../frontend/dist:/usr/share/nginx/html
+
+  server:
+    build:
+      context: .
+      dockerfile: docker/server.dockerfile
+    restart: always
+    ports:
+      - "80:80"
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: always
+    command: tunnel run api
+    volumes:
+      - ./docker/cloudflared:/etc/cloudflared
 volumes:
   mariadb_data:
