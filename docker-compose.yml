@@ -25,29 +25,29 @@ services:
     ports:
       - "8888:80"
 
-  frontend:
-    build:
-      context: .
-      dockerfile: docker/frontend.dockerfile
-    ports:
-      - "8080:80"
-    restart: always
-    volumes:
-      - ../frontend/dist:/usr/share/nginx/html
+  # frontend:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/frontend.dockerfile
+  #   ports:
+  #     - "8080:80"
+  #   restart: always
+  #   volumes:
+  #     - ../frontend/dist:/usr/share/nginx/html
 
-  server:
-    build:
-      context: .
-      dockerfile: docker/server.dockerfile
-    restart: always
-    ports:
-      - "80:80"
+  # server:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/server.dockerfile
+  #   restart: always
+  #   ports:
+  #     - "80:80"
 
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    restart: always
-    command: tunnel run api
-    volumes:
-      - ./docker/cloudflared:/etc/cloudflared
+  # cloudflared:
+  #   image: cloudflare/cloudflared:latest
+  #   restart: always
+  #   command: tunnel run api
+  #   volumes:
+  #     - ./docker/cloudflared:/etc/cloudflared
 volumes:
   mariadb_data:

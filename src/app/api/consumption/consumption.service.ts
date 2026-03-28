@@ -1,14 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Consumption, Prisma } from '@prisma/client';
 import { addDays, format, subDays, subYears } from 'date-fns';
-import { PrismaService, ensureDate } from '@/common';
 import { DATE_FORMAT, DEFAULT_PAGINATION_PARAMS, MONTH_FORMAT } from '@/config';
+import { PrismaService } from '@/common/services/prisma.service';
+import { ensureDate } from '@/common/utils/helpers';
 import { CreateConsumptionDto } from './dto/create-consumption.dto';
+import { GetExpenseOverviewQueryDto } from './dto/get-expense-overview-query.dto';
 import { UpdateConsumptionDto } from './dto/update-consumption.dto';
+import { ExpenseOverviewAggregateService } from './services/expense-overview-aggregate.service';
 
 @Injectable()
 export class ConsumptionService {
-  constructor(private prismaService: PrismaService) { }
+  constructor(
+    private prismaService: PrismaService,
+    private expenseOverviewAggregateService: ExpenseOverviewAggregateService,
+  ) { }
 
   paginate(
     userId: string,
@@ -152,5 +158,9 @@ export class ConsumptionService {
     return Array.from(consumptionDayMap.entries()).map(
       ([date, amount]) => ({ date, amount })
     );
+  }
+
+  getExpenseOverview(userId: string, query: GetExpenseOverviewQueryDto) {
+    return this.expenseOverviewAggregateService.getExpenseOverview(userId, query);
   }
 }
