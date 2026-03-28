@@ -10,6 +10,7 @@ node: >= 16+
 - Run `npm install` to install packages
 - Run `npm run start:dev` when developing
 - Build: `npm run build`
+- Copy `docker-compose.yml.example` to `docker-compose.yml`
 
 **For developer, setup** `husky`: `npm run prepare`
 

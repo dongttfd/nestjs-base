@@ -11,6 +11,18 @@ datasource db {
   url      = env("MYSQL_DB_URL")
 }
 
+enum ExpenseOverviewPeriod {
+  week
+  month
+  year
+}
+
+enum ExpenseOverviewRefreshStatus {
+  success
+  failed
+  stale
+}
+
 model User {
   id          String       @id @unique @default(uuid())
   email       String       @unique
@@ -68,3 +80,26 @@ model Consumption {
   @@map("consumptions")
 }
 
+model ExpenseOverviewSnapshot {
+  id                      String                       @id @unique @default(uuid())
+  userId                  String
+  period                  ExpenseOverviewPeriod
+  anchorDate              DateTime                     @db.Date
+  rangeStart              DateTime
+  rangeEnd                DateTime
+  totalAmount             BigInt
+  taxonomyVersion         String                       @default("expense-taxonomy-canonical-v2")
+  classifierVersion       String                       @default("expense-classifier-db-title-v2")
+  lastSuccessfulRefreshAt DateTime?                    @db.Timestamp(3)
+  lastAttemptAt           DateTime?                    @db.Timestamp(3)
+  refreshStatus           ExpenseOverviewRefreshStatus @default(success)
+  isEmpty                 Boolean                      @default(false)
+  groups                  Json
+  createdAt               DateTime                     @default(now()) @db.Timestamp(3)
+  updatedAt               DateTime                     @updatedAt @db.Timestamp(3)
+
+  @@unique([userId, period, anchorDate])
+  @@index([userId, period])
+  @@index([userId, period, rangeStart, rangeEnd])
+  @@map("expense_overview_snapshots")
+}

@@ -10,16 +10,18 @@ import {
   Request,
 } from '@nestjs/common';
 import { ApiBody, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { ApiBadRequestResponse, ApiPagination, BodyWithParam } from '@/common';
+import { ApiBadRequestResponse, ApiPagination, BodyWithParam, SuccessEntity } from '@/common';
 import { ApiAuthGuard } from '@/app/api/auth/guards';
 import { ConsumptionService } from './consumption.service';
 import { CreateConsumptionDto } from './dto/create-consumption.dto';
+import { GetExpenseOverviewQueryDto } from './dto/get-expense-overview-query.dto';
 import { UpdateConsumptionDto } from './dto/update-consumption.dto';
 import { ConsumptionAmountGroupDateCollectionEntity } from './entities/consumption-amount-group-date-collection.entity';
 import { ConsumptionAmountGroupMonthCollectionEntity } from './entities/consumption-amount-group-month-collection.entity';
 import { ConsumptionAmountGroupYearCollectionEntity } from './entities/consumption-amount-group-year-collection.entity';
 import { ConsumptionPaginationEntity } from './entities/consumption-pagination.entity';
 import { ConsumptionSuccessEntity } from './entities/consumption-success.entity';
+import { ExpenseOverviewResponseEntity } from './entities/expense-overview-response.entity';
 
 @ApiTags('Consumption')
 @Controller()
@@ -127,6 +129,23 @@ export class ConsumptionController {
   async getConsumptionStatisticByYear(@Request() request) {
     return new ConsumptionAmountGroupYearCollectionEntity(
       await this.consumptionService.getStatisticByYear(request.user.id)
+    );
+  }
+
+  /**
+   * Summary expense overview by period
+   */
+  @ApiBadRequestResponse()
+  @ApiAuthGuard()
+  @Get('summary/expenses/overview')
+  async getExpenseOverview(
+    @Request() request,
+    @Query() query: GetExpenseOverviewQueryDto,
+  ) {
+    return new SuccessEntity(
+      new ExpenseOverviewResponseEntity(
+        await this.consumptionService.getExpenseOverview(request.user.id, query),
+      ),
     );
   }
 }
