@@ -38,6 +38,20 @@ interface SaveSnapshotParams {
   lastAttemptAt?: Date;
 }
 
+interface SnapshotDeleteCondition {
+  period: ExpenseOverviewPeriod;
+  rangeStart: Date;
+  rangeEnd: Date;
+}
+
+type SnapshotModelClient = {
+  expenseOverviewSnapshot: {
+    create: (args: unknown) => Promise<unknown>;
+    deleteMany: (args: unknown) => Promise<unknown>;
+    findFirst: (args: unknown) => Promise<ExpenseOverviewSnapshotRecord | null>;
+  };
+};
+
 @Injectable()
 export class ExpenseOverviewSnapshotService {
   constructor(private readonly prismaService: PrismaService) {}
@@ -127,6 +141,25 @@ export class ExpenseOverviewSnapshotService {
           { taxonomyVersion: { not: EXPENSE_OVERVIEW_TAXONOMY_VERSION } },
           { classifierVersion: { not: EXPENSE_OVERVIEW_CLASSIFIER_VERSION } },
         ],
+      },
+    });
+  }
+
+  async invalidateSnapshotsByConsumptionDates(
+    userId: string,
+    dates: Date[],
+    client: SnapshotModelClient = this.prismaService as SnapshotModelClient,
+  ) {
+    const uniqueConditions = this.buildSnapshotDeleteConditions(dates);
+
+    if (uniqueConditions.length === 0) {
+      return;
+    }
+
+    await this.getSnapshotModel(client).deleteMany({
+      where: {
+        userId,
+        OR: uniqueConditions,
       },
     });
   }
@@ -240,13 +273,38 @@ export class ExpenseOverviewSnapshotService {
     return normalizedAnchorDate;
   }
 
-  private getSnapshotModel() {
-    return (this.prismaService as PrismaService & {
-      expenseOverviewSnapshot: {
-        create: (args: unknown) => Promise<unknown>;
-        deleteMany: (args: unknown) => Promise<unknown>;
-        findFirst: (args: unknown) => Promise<ExpenseOverviewSnapshotRecord | null>;
-      };
-    }).expenseOverviewSnapshot;
+  private buildSnapshotDeleteConditions(dates: Date[]): SnapshotDeleteCondition[] {
+    const conditions = new Map<string, SnapshotDeleteCondition>();
+
+    dates.forEach((date) => {
+      const normalizedDate = new Date(date);
+
+      if (Number.isNaN(normalizedDate.getTime())) {
+        return;
+      }
+
+      [
+        'week',
+        'month',
+        'year',
+      ].forEach((period) => {
+        const range = resolveExpensePeriodRange(period as ExpenseOverviewPeriod, normalizedDate);
+        const key = `${period}:${range.start.toISOString()}:${range.end.toISOString()}`;
+
+        if (!conditions.has(key)) {
+          conditions.set(key, {
+            period: period as ExpenseOverviewPeriod,
+            rangeStart: range.start,
+            rangeEnd: range.end,
+          });
+        }
+      });
+    });
+
+    return Array.from(conditions.values());
+  }
+
+  private getSnapshotModel(client: SnapshotModelClient = this.prismaService as SnapshotModelClient) {
+    return client.expenseOverviewSnapshot;
   }
 }

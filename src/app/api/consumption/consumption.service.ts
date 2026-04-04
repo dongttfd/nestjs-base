@@ -8,12 +8,14 @@ import { CreateConsumptionDto } from './dto/create-consumption.dto';
 import { GetExpenseOverviewQueryDto } from './dto/get-expense-overview-query.dto';
 import { UpdateConsumptionDto } from './dto/update-consumption.dto';
 import { ExpenseOverviewAggregateService } from './services/expense-overview-aggregate.service';
+import { ExpenseOverviewSnapshotService } from './services/expense-overview-snapshot.service';
 
 @Injectable()
 export class ConsumptionService {
   constructor(
     private prismaService: PrismaService,
     private expenseOverviewAggregateService: ExpenseOverviewAggregateService,
+    private expenseOverviewSnapshotService: ExpenseOverviewSnapshotService,
   ) { }
 
   paginate(
@@ -43,43 +45,79 @@ export class ConsumptionService {
     );
   }
 
-  create(userId: string, consumptionDto: CreateConsumptionDto) {
-    return this.prismaService.consumption.create({
-      data: {
-        ...consumptionDto,
+  async create(userId: string, consumptionDto: CreateConsumptionDto) {
+    return this.prismaService.$transaction(async (tx) => {
+      const consumption = await tx.consumption.create({
+        data: {
+          ...consumptionDto,
+          userId,
+          date: new Date(consumptionDto.date),
+        },
+      });
+
+      await this.expenseOverviewSnapshotService.invalidateSnapshotsByConsumptionDates(
         userId,
-        date: new Date(consumptionDto.date),
-      },
+        [consumption.date],
+        tx,
+      );
+
+      return consumption;
     });
   }
 
   async update(userId: string, consumptionDto: UpdateConsumptionDto) {
-    await this.canAccessConsumption(consumptionDto.id, userId);
+    return this.prismaService.$transaction(async (tx) => {
+      const existingConsumption = await this.getAccessibleConsumption(userId, consumptionDto.id, tx);
 
-    return this.prismaService.consumption.update({
-      where: { id: consumptionDto.id },
-      data: {
-        title: consumptionDto.title,
-        amount: consumptionDto.amount,
-        date: new Date(consumptionDto.date),
-      },
+      const updatedConsumption = await tx.consumption.update({
+        where: { id: consumptionDto.id },
+        data: {
+          title: consumptionDto.title,
+          amount: consumptionDto.amount,
+          date: new Date(consumptionDto.date),
+        },
+      });
+
+      await this.expenseOverviewSnapshotService.invalidateSnapshotsByConsumptionDates(
+        userId,
+        [existingConsumption.date, updatedConsumption.date],
+        tx,
+      );
+
+      return updatedConsumption;
     });
   }
 
-  private async canAccessConsumption(userId: string, id: string) {
-    const consumption = await this.prismaService.consumption.findFirst({
+  private async getAccessibleConsumption(
+    userId: string,
+    id: string,
+    client: Pick<PrismaService, 'consumption'> = this.prismaService,
+  ) {
+    const consumption = await client.consumption.findFirst({
       where: { id, userId },
     });
 
     if (!consumption) {
       throw new NotFoundException();
     }
+
+    return consumption;
   }
 
   async destroy(userId: string, id: string) {
-    await this.canAccessConsumption(userId, id);
+    return this.prismaService.$transaction(async (tx) => {
+      const consumption = await this.getAccessibleConsumption(userId, id, tx);
 
-    return this.prismaService.consumption.delete({ where: { id } });
+      const deletedConsumption = await tx.consumption.delete({ where: { id } });
+
+      await this.expenseOverviewSnapshotService.invalidateSnapshotsByConsumptionDates(
+        userId,
+        [consumption.date],
+        tx,
+      );
+
+      return deletedConsumption;
+    });
   }
 
   async getStatisticByYear(userId: string) {

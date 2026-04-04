@@ -1,5 +1,6 @@
 import { PrismaService } from '@/common/services/prisma.service';
 import { ExpenseOverviewSnapshotService } from '@/app/api/consumption/services/expense-overview-snapshot.service';
+import { resolveExpensePeriodRange } from '@/app/api/consumption/utils/expense-period.util';
 
 const createPrismaServiceMock = () =>
   ({
@@ -262,6 +263,45 @@ describe('ExpenseOverviewSnapshotService', () => {
         OR: [
           { taxonomyVersion: { not: 'expense-taxonomy-canonical-v2' } },
           { classifierVersion: { not: 'expense-classifier-db-title-v2' } },
+        ],
+      },
+    });
+  });
+
+  it('invalidates week, month, and year snapshots for each affected consumption date', async () => {
+    jest
+      .spyOn((prismaService as any).expenseOverviewSnapshot, 'deleteMany')
+      .mockResolvedValue({ count: 3 } as never);
+
+    const consumptionDate = new Date('2026-03-31T05:30:00.000Z');
+    const weekRange = resolveExpensePeriodRange('week', consumptionDate);
+    const monthRange = resolveExpensePeriodRange('month', consumptionDate);
+    const yearRange = resolveExpensePeriodRange('year', consumptionDate);
+
+    await service.invalidateSnapshotsByConsumptionDates('user-1', [
+      consumptionDate,
+      new Date('2026-03-31T05:30:00.000Z'),
+    ]);
+
+    expect((prismaService as any).expenseOverviewSnapshot.deleteMany).toHaveBeenCalledWith({
+      where: {
+        userId: 'user-1',
+        OR: [
+          {
+            period: 'week',
+            rangeStart: weekRange.start,
+            rangeEnd: weekRange.end,
+          },
+          {
+            period: 'month',
+            rangeStart: monthRange.start,
+            rangeEnd: monthRange.end,
+          },
+          {
+            period: 'year',
+            rangeStart: yearRange.start,
+            rangeEnd: yearRange.end,
+          },
         ],
       },
     });
