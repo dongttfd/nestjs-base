@@ -39,3 +39,6 @@ lerna-debug.log*
 .env
 docker-compose.yml
 .gitnexus
+.claude
+AGENTS.md
+CLAUDE.md
