@@ -41,12 +41,13 @@ model UserDevice {
   deviceId     String
   userId       String
   accessToken  String   @db.Text
-  refreshToken String   @db.Text
+  sessionId    String   @db.VarChar(36)
   createdAt    DateTime @default(now()) @db.Timestamp(3)
   updatedAt    DateTime @updatedAt @db.Timestamp(3)
   user         User     @relation(fields: [userId], references: [id])
 
   @@unique([deviceId, userId])
+  @@index([sessionId])
   @@map("user_devices")
 }
 

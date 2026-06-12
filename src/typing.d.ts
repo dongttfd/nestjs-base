@@ -118,7 +118,6 @@ type JwtPayload = {
 };
 type AuthToken = {
   accessToken: string;
-  refreshToken: string;
 };
 
 // Permission
