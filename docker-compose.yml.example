@@ -40,6 +40,8 @@ services:
       context: .
       dockerfile: docker/server.dockerfile
     restart: always
+    env_file:
+      - .env
     ports:
       - "80:80"
 

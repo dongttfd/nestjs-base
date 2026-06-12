@@ -1,4 +1,4 @@
-import { Environment } from '@/config';
+import { Environment } from '@/config/environment';
 
 export const isProduction = () =>
   process.env.NODE_ENV === Environment.PRODUCTION;

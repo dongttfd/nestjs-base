@@ -6,18 +6,25 @@ import { PrismaService } from '@/common';
 export class UserDeviceService {
   constructor(private prismaService: PrismaService) {}
 
-  createOrUpdate(userId: string, deviceId: string, token: AuthToken) {
+  createOrUpdate(userId: string, deviceId: string, accessToken: string, sessionId: string) {
     return this.prismaService.userDevice.upsert({
       where: {
         // eslint-disable-next-line camelcase
         deviceId_userId: { userId, deviceId },
       },
-      update: token,
+      update: { accessToken, sessionId },
       create: {
         userId,
         deviceId,
-        ...token,
+        accessToken,
+        sessionId,
       },
+    });
+  }
+
+  findBySessionId(sessionId: string) {
+    return this.prismaService.userDevice.findFirst({
+      where: { sessionId },
     });
   }
 

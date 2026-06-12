@@ -6,12 +6,11 @@ export class AuthTokenEntity extends SuccessEntity<AuthToken> {
     type: Object,
     example: {
       accessToken: 'eyJhbGciOi...',
-      refreshToken: 'eyJhbGciOi...',
     },
   })
   data: AuthToken;
 
-  constructor({ accessToken, refreshToken }: AuthToken) {
-    super({ accessToken, refreshToken });
+  constructor({ accessToken }: AuthToken) {
+    super({ accessToken });
   }
 }

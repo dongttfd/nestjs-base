@@ -3,9 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import { StringValue } from 'ms';
+import { v4 as uuidv4 } from 'uuid';
 import { UnauthenticatedException } from '@/common';
-import { RefreshTokenDto } from '@/app/api/auth/dto/refresh-token.dto';
 import { UserService } from '@/app/api/user/user.service';
 import { UserDeviceService } from '@/app/api/user-device/user-device.service';
 
@@ -41,23 +40,14 @@ export class AuthService {
     return this.userDeviceService.delete(user.id, jwtDecoded?.deviceId);
   }
 
-  async refreshToken({ refreshToken, deviceId }: RefreshTokenDto) {
-    const jwtDecoded = this.decodeJwt(
-      refreshToken,
-      this.configService.get<string>('jwt.refreshSecret'),
-    );
+  async refreshToken(sessionId: string, deviceId: string) {
+    const userDevice = await this.userDeviceService.findBySessionId(sessionId);
 
-    const user = await this.userService.findById(jwtDecoded?.id);
-    const userDevice = await this.userDeviceService.find({
-      userId: jwtDecoded?.id,
-      deviceId,
-    });
-
-    if (!user || !userDevice || userDevice.refreshToken !== refreshToken) {
+    if (!userDevice || userDevice.deviceId !== deviceId) {
       throw new UnauthenticatedException();
     }
 
-    return this.generateTokens(user.id, deviceId);
+    return this.generateTokens(userDevice.userId, deviceId);
   }
 
   private decodeJwt(jwt: string, secret?: string) {
@@ -76,25 +66,14 @@ export class AuthService {
   }
 
   private async generateTokens(userId: string, deviceId: string) {
-    const jwtPayload: JwtPayload = {
-      id: userId,
-      deviceId,
-    };
+    const jwtPayload: JwtPayload = { id: userId, deviceId };
+    const accessToken = this.jwtService.sign(jwtPayload);
+    const sessionId = uuidv4();
 
-    const tokens: AuthToken = {
-      accessToken: this.jwtService.sign(jwtPayload),
-      refreshToken: this.jwtService.sign(jwtPayload, {
-        secret: this.configService.get<string>('jwt.refreshSecret'),
-        expiresIn: this.configService.get<string>(
-          'jwt.refreshExpiration',
-        ) as StringValue,
-      }),
-    };
-
-    return await this.userDeviceService.createOrUpdate(
-      userId,
-      deviceId,
-      tokens,
+    await this.userDeviceService.createOrUpdate(
+      userId, deviceId, accessToken, sessionId,
     );
+
+    return { accessToken, sessionId };
   }
 }

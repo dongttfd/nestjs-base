@@ -8,6 +8,7 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { json as jsonBodyParser } from 'body-parser';
 import { useContainer, ValidationError } from 'class-validator';
+import cookieParser from 'cookie-parser';
 import { config as dotenvConfig } from 'dotenv';
 import { expand } from 'dotenv-expand';
 import { getLogLevels } from '@/common';
@@ -48,6 +49,7 @@ export default async (module: Type, includeSocket = false) => {
   useValidation(app, module);
 
   // enable cors and json for express
+  app.use(cookieParser());
   app.use(jsonBodyParser({ limit: appConfig.bodyJsonSizeLimit }));
   app.enableCors(cors);
 
