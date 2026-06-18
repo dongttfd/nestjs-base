@@ -72,12 +72,14 @@ model Consumption {
   title     String
   amount    BigInt
   date      DateTime
+  categoryKey String?  @default("other") @db.VarChar(30)
   createdAt DateTime @default(now()) @db.Timestamp(3)
   updatedAt DateTime @updatedAt @db.Timestamp(3)
 
   @@index([userId])
   @@index([date])
   @@index([userId, date])
+  @@index([userId, categoryKey])
   @@map("consumptions")
 }
 
@@ -90,7 +92,7 @@ model ExpenseOverviewSnapshot {
   rangeEnd                DateTime
   totalAmount             BigInt
   taxonomyVersion         String                       @default("expense-taxonomy-canonical-v2")
-  classifierVersion       String                       @default("expense-classifier-db-title-v2")
+  classifierVersion       String                       @default("expense-classifier-ai-v1")
   lastSuccessfulRefreshAt DateTime?                    @db.Timestamp(3)
   lastAttemptAt           DateTime?                    @db.Timestamp(3)
   refreshStatus           ExpenseOverviewRefreshStatus @default(success)

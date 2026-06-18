@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
+import { AiClassifierClientService } from '@/common/services/ai-classifier-client.service';
 import { ConsumptionController } from './consumption.controller';
 import { ConsumptionService } from './consumption.service';
-import { ExpenseClassifierService } from './services/expense-classifier.service';
 import { ExpenseOverviewAggregateService } from './services/expense-overview-aggregate.service';
 import { ExpenseOverviewSnapshotService } from './services/expense-overview-snapshot.service';
 
@@ -9,7 +9,7 @@ import { ExpenseOverviewSnapshotService } from './services/expense-overview-snap
   controllers: [ConsumptionController],
   providers: [
     ConsumptionService,
-    ExpenseClassifierService,
+    AiClassifierClientService,
     ExpenseOverviewAggregateService,
     ExpenseOverviewSnapshotService,
   ],

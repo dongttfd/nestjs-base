@@ -1,4 +1,5 @@
 import { Consumption } from '@prisma/client';
+import { AiClassifierClientService } from '@/common/services/ai-classifier-client.service';
 import { PrismaService } from '@/common/services/prisma.service';
 import { ConsumptionService } from '@/app/api/consumption/consumption.service';
 import { ExpenseOverviewAggregateService } from '@/app/api/consumption/services/expense-overview-aggregate.service';
@@ -35,18 +36,26 @@ const createSnapshotServiceMock = () =>
     invalidateSnapshotsByConsumptionDates: jest.fn(),
   }) as unknown as ExpenseOverviewSnapshotService;
 
+const createClassifierClientMock = () =>
+  ({
+    classify: jest.fn().mockResolvedValue({ category: 'other', confidence: 1.0 }),
+  }) as unknown as AiClassifierClientService;
+
 describe('ConsumptionService', () => {
   let prismaService: PrismaService;
   let aggregateService: ExpenseOverviewAggregateService;
   let snapshotService: ExpenseOverviewSnapshotService;
+  let classifierClient: AiClassifierClientService;
   let service: ConsumptionService;
 
   beforeEach(() => {
     prismaService = createPrismaServiceMock();
+    classifierClient = createClassifierClientMock();
     aggregateService = createAggregateServiceMock();
     snapshotService = createSnapshotServiceMock();
     service = new ConsumptionService(
       prismaService,
+      classifierClient,
       aggregateService,
       snapshotService,
     );

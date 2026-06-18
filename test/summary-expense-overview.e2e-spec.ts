@@ -4,7 +4,6 @@ import request from 'supertest';
 import { PrismaService } from '@/common/services/prisma.service';
 import { ConsumptionController } from '@/app/api/consumption/consumption.controller';
 import { ConsumptionService } from '@/app/api/consumption/consumption.service';
-import { ExpenseClassifierService } from '@/app/api/consumption/services/expense-classifier.service';
 import { ExpenseOverviewAggregateService } from '@/app/api/consumption/services/expense-overview-aggregate.service';
 import { ExpenseOverviewSnapshotService } from '@/app/api/consumption/services/expense-overview-snapshot.service';
 
@@ -64,7 +63,6 @@ describe('SummaryExpenseOverviewController (e2e)', () => {
       controllers: [ConsumptionController],
       providers: [
         ConsumptionService,
-        ExpenseClassifierService,
         ExpenseOverviewAggregateService,
         ExpenseOverviewSnapshotService,
         {
@@ -139,7 +137,7 @@ describe('SummaryExpenseOverviewController (e2e)', () => {
     expect(response.body.statusCode).toBe(2000);
     expect(response.body.data.period).toBe('week');
     expect(response.body.data.taxonomyVersion).toBe('expense-taxonomy-canonical-v2');
-    expect(response.body.data.classifierVersion).toBe('expense-classifier-db-title-v2');
+    expect(response.body.data.classifierVersion).toBe('expense-classifier-ai-v1');
     expect(response.body.data.range.start).toBe('2026-03-22T17:00:00.000Z');
     expect(response.body.data.range.end).toBe('2026-03-29T16:59:59.999Z');
     expect(response.body.data.totalAmount).toBe(210000);
