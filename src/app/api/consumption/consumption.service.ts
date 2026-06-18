@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Consumption, Prisma } from '@prisma/client';
 import { addDays, format, subDays, subYears } from 'date-fns';
 import { DATE_FORMAT, DEFAULT_PAGINATION_PARAMS, MONTH_FORMAT } from '@/config';
+import { AiClassifierClientService } from '@/common/services/ai-classifier-client.service';
 import { PrismaService } from '@/common/services/prisma.service';
 import { ensureDate } from '@/common/utils/helpers';
 import { CreateConsumptionDto } from './dto/create-consumption.dto';
@@ -14,6 +15,7 @@ import { ExpenseOverviewSnapshotService } from './services/expense-overview-snap
 export class ConsumptionService {
   constructor(
     private prismaService: PrismaService,
+    private classifierClient: AiClassifierClientService,
     private expenseOverviewAggregateService: ExpenseOverviewAggregateService,
     private expenseOverviewSnapshotService: ExpenseOverviewSnapshotService,
   ) { }
@@ -46,12 +48,15 @@ export class ConsumptionService {
   }
 
   async create(userId: string, consumptionDto: CreateConsumptionDto) {
+    const { category } = await this.classifierClient.classify(consumptionDto.title);
+
     return this.prismaService.$transaction(async (tx) => {
       const consumption = await tx.consumption.create({
         data: {
           ...consumptionDto,
           userId,
           date: new Date(consumptionDto.date),
+          categoryKey: category,
         },
       });
 
@@ -66,6 +71,8 @@ export class ConsumptionService {
   }
 
   async update(userId: string, consumptionDto: UpdateConsumptionDto) {
+    const { category } = await this.classifierClient.classify(consumptionDto.title);
+
     return this.prismaService.$transaction(async (tx) => {
       const existingConsumption = await this.getAccessibleConsumption(userId, consumptionDto.id, tx);
 
@@ -75,6 +82,7 @@ export class ConsumptionService {
           title: consumptionDto.title,
           amount: consumptionDto.amount,
           date: new Date(consumptionDto.date),
+          categoryKey: category,
         },
       });
 

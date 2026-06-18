@@ -10,13 +10,16 @@ export const expenseCategoryKeys = [
   'shopping',
   'entertainment_social',
   'education',
+  'family_wife',
+  'family_visit',
+  'wedding_funeral',
   'other',
 ] as const;
 
 export type ExpenseOverviewCategoryKey = typeof expenseCategoryKeys[number];
 
 export const expenseOverviewTaxonomyVersion = 'expense-taxonomy-canonical-v2';
-export const expenseOverviewClassifierVersion = 'expense-classifier-db-title-v2';
+export const expenseOverviewClassifierVersion = 'expense-classifier-ai-v1';
 
 export interface ExpenseCategoryMetadata {
   key: ExpenseOverviewCategoryKey;
@@ -78,11 +81,32 @@ export const expenseCategoryMetadata: ExpenseCategoryMetadata[] = [
     order: 7,
   },
   {
+    key: 'family_wife',
+    label: 'Đưa vợ chi tiêu',
+    translationKey: 'summary.expense_overview.categories.family_wife',
+    color: '#E11D48',
+    order: 8,
+  },
+  {
+    key: 'family_visit',
+    label: 'Thăm thân',
+    translationKey: 'summary.expense_overview.categories.family_visit',
+    color: '#D946EF',
+    order: 9,
+  },
+  {
+    key: 'wedding_funeral',
+    label: 'Hiếu hỉ',
+    translationKey: 'summary.expense_overview.categories.wedding_funeral',
+    color: '#14B8A6',
+    order: 10,
+  },
+  {
     key: 'other',
     label: 'Khác',
     translationKey: 'summary.expense_overview.categories.other',
     color: '#64748B',
-    order: 8,
+    order: 11,
   },
 ];
 

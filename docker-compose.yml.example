@@ -45,6 +45,16 @@ services:
     ports:
       - "80:80"
 
+  classifier:
+    build:
+      context: ../classifier
+      dockerfile: ../backend/docker/classifier.dockerfile
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../classifier/models:/app/models
+
   cloudflared:
     image: cloudflare/cloudflared:latest
     restart: always

@@ -1,6 +1,5 @@
 import { Consumption } from '@prisma/client';
 import { PrismaService } from '@/common/services/prisma.service';
-import { ExpenseClassifierService } from '@/app/api/consumption/services/expense-classifier.service';
 import { ExpenseOverviewAggregateService } from '@/app/api/consumption/services/expense-overview-aggregate.service';
 import { ExpenseOverviewSnapshotService } from '@/app/api/consumption/services/expense-overview-snapshot.service';
 
@@ -28,7 +27,6 @@ describe('ExpenseOverviewAggregateService', () => {
     snapshotService = createSnapshotServiceMock();
     service = new ExpenseOverviewAggregateService(
       prismaService,
-      new ExpenseClassifierService(),
       snapshotService,
     );
   });
@@ -159,7 +157,7 @@ describe('ExpenseOverviewAggregateService', () => {
 
     expect(overview.groups).toHaveLength(1);
     expect(overview.groups[0]?.key).toBe('other');
-    expect(overview.groups[0]?.order).toBe(8);
+    expect(overview.groups[0]?.order).toBe(11);
     expect(overview.groups[0]?.latestTransactions).toHaveLength(10);
     expect(overview.groups[0]?.latestTransactions.map((transaction) => transaction.id)).toEqual([
       'tx-1',
@@ -195,7 +193,7 @@ describe('ExpenseOverviewAggregateService', () => {
     expect(overview.isStale).toBe(false);
     expect(overview.totalAmount).toBe(BigInt(0));
     expect(overview.taxonomyVersion).toBe('expense-taxonomy-canonical-v2');
-    expect(overview.classifierVersion).toBe('expense-classifier-db-title-v2');
+    expect(overview.classifierVersion).toBe('expense-classifier-ai-v1');
     expect(overview.groups).toEqual([]);
     expect(overview.lastSuccessfulRefreshAt).toBeInstanceOf(Date);
   });
@@ -204,7 +202,7 @@ describe('ExpenseOverviewAggregateService', () => {
     const staleSnapshot = {
       period: 'week' as const,
       taxonomyVersion: 'expense-taxonomy-canonical-v2',
-      classifierVersion: 'expense-classifier-db-title-v2',
+      classifierVersion: 'expense-classifier-ai-v1',
       range: {
         start: new Date('2026-03-23T00:00:00.000Z'),
         end: new Date('2026-03-29T23:59:59.999Z'),
@@ -218,7 +216,7 @@ describe('ExpenseOverviewAggregateService', () => {
           key: 'other' as const,
           label: 'Khác',
           color: '#64748B',
-          order: 8,
+          order: 11,
           amount: 125000,
           percentage: 100,
           transactionCount: 1,
@@ -265,7 +263,7 @@ describe('ExpenseOverviewAggregateService', () => {
     const cachedSnapshot = {
       period: 'week' as const,
       taxonomyVersion: 'expense-taxonomy-canonical-v2',
-      classifierVersion: 'expense-classifier-db-title-v2',
+      classifierVersion: 'expense-classifier-ai-v1',
       range: {
         start: new Date('2026-03-23T00:00:00.000Z'),
         end: new Date('2026-03-29T23:59:59.999Z'),
@@ -295,7 +293,7 @@ describe('ExpenseOverviewAggregateService', () => {
     jest.spyOn(snapshotService, 'findReusableSnapshot').mockResolvedValue({
       period: 'week',
       taxonomyVersion: 'expense-taxonomy-canonical-v2',
-      classifierVersion: 'expense-classifier-db-title-v2',
+      classifierVersion: 'expense-classifier-ai-v1',
       range: {
         start: new Date('2026-03-23T00:00:00.000Z'),
         end: new Date('2026-03-29T23:59:59.999Z'),
@@ -334,6 +332,7 @@ describe('ExpenseOverviewAggregateService', () => {
           id: 'tx-essential',
           userId: 'user-1',
           title: 'Bữa trưa',
+          categoryKey: 'essential',
           amount: BigInt(40000),
           date: new Date('2026-03-28T05:30:00.000Z'),
           createdAt: new Date('2026-03-28T05:30:00.000Z'),
@@ -343,6 +342,7 @@ describe('ExpenseOverviewAggregateService', () => {
           id: 'tx-housing',
           userId: 'user-1',
           title: 'Tiền điện',
+          categoryKey: 'housing',
           amount: BigInt(60000),
           date: new Date('2026-03-27T05:30:00.000Z'),
           createdAt: new Date('2026-03-27T05:30:00.000Z'),

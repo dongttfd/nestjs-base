@@ -13,7 +13,6 @@ import { GetExpenseOverviewQueryDto } from '@/app/api/consumption/dto/get-expens
 import { ExpenseCategorySummary } from '@/app/api/consumption/entities/expense-category-summary.entity';
 import { ExpenseOverviewResponse } from '@/app/api/consumption/entities/expense-overview-response.entity';
 import { ExpenseTransactionPreview } from '@/app/api/consumption/entities/expense-transaction-preview.entity';
-import { ExpenseClassifierService } from '@/app/api/consumption/services/expense-classifier.service';
 import { ExpenseOverviewSnapshotService } from '@/app/api/consumption/services/expense-overview-snapshot.service';
 import { resolveExpensePeriodRange } from '@/app/api/consumption/utils/expense-period.util';
 
@@ -21,7 +20,6 @@ import { resolveExpensePeriodRange } from '@/app/api/consumption/utils/expense-p
 export class ExpenseOverviewAggregateService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly expenseClassifierService: ExpenseClassifierService,
     private readonly expenseOverviewSnapshotService: ExpenseOverviewSnapshotService,
   ) {}
 
@@ -201,7 +199,7 @@ export class ExpenseOverviewAggregateService {
 
   private groupConsumptionsByCategory(consumptions: Consumption[]) {
     return consumptions.reduce((result, consumption) => {
-      const categoryKey = this.expenseClassifierService.classify(consumption.title);
+      const categoryKey = (consumption.categoryKey || 'other') as typeof EXPENSE_OVERVIEW_CATEGORY_KEYS[number];
       const currentConsumptions = result.get(categoryKey) ?? [];
 
       currentConsumptions.push(consumption);
