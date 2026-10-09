@@ -1,6 +1,7 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
+import { AiClassifierClientService } from '@/common/services/ai-classifier-client.service';
 import { PrismaService } from '@/common/services/prisma.service';
 import { ConsumptionController } from '@/app/api/consumption/consumption.controller';
 import { ConsumptionService } from '@/app/api/consumption/consumption.service';
@@ -66,6 +67,12 @@ describe('SummaryExpenseOverviewController (e2e)', () => {
         ExpenseOverviewAggregateService,
         ExpenseOverviewSnapshotService,
         {
+          provide: AiClassifierClientService,
+          useValue: {
+            classify: jest.fn(async () => ({ category: 'essential' })),
+          },
+        },
+        {
           provide: PrismaService,
           useValue: prismaServiceMock,
         },
@@ -103,6 +110,7 @@ describe('SummaryExpenseOverviewController (e2e)', () => {
         userId: 'user-1',
         title: 'Bua trua 1',
         amount: BigInt(45000),
+        categoryKey: 'essential',
         date: new Date('2026-03-27T05:30:00.000Z'),
         createdAt: new Date('2026-03-27T05:30:00.000Z'),
         updatedAt: new Date('2026-03-27T05:30:00.000Z'),
@@ -112,6 +120,7 @@ describe('SummaryExpenseOverviewController (e2e)', () => {
         userId: 'user-1',
         title: 'Bua trua 2',
         amount: BigInt(120000),
+        categoryKey: 'essential',
         date: new Date('2026-03-26T05:30:00.000Z'),
         createdAt: new Date('2026-03-26T05:30:00.000Z'),
         updatedAt: new Date('2026-03-26T05:30:00.000Z'),
@@ -121,6 +130,7 @@ describe('SummaryExpenseOverviewController (e2e)', () => {
         userId: 'user-1',
         title: 'Bua trua 3',
         amount: BigInt(45000),
+        categoryKey: 'essential',
         date: new Date('2026-03-28T05:30:00.000Z'),
         createdAt: new Date('2026-03-28T05:30:00.000Z'),
         updatedAt: new Date('2026-03-28T05:30:00.000Z'),

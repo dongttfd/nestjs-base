@@ -44,6 +44,11 @@ services:
       - .env
     ports:
       - "80:80"
+    volumes:
+      - school_fees_data:/app/data/school-fees
+    depends_on:
+      - mariadb
+      - classifier
 
   classifier:
     build:
@@ -63,3 +68,4 @@ services:
       - ./docker/cloudflared:/etc/cloudflared
 volumes:
   mariadb_data:
+  school_fees_data:

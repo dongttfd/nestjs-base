@@ -7,6 +7,7 @@ export const configApp = (): AppConfig => ({
   redisPort: parseInt(process.env.REDIS_PORT || '', 10) || 6379,
   cache: process.env.NODE_ENV === Environment.PRODUCTION,
   bodyJsonSizeLimit: '10mb',
+  schoolFeesDataDir: process.env.SCHOOL_FEES_DATA_DIR || 'src/storage/data/school-fees',
   database: {
     driver: process.env.DATABASE_DRIVER || 'mysql',
     mysql: {

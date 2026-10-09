@@ -5,6 +5,7 @@ import { ServeStaticExceptionFilter } from '@/common/filters';
 import { AuthModule } from './auth/auth.module';
 import { ConsumptionModule } from './consumption/consumption.module';
 import { InvestmentModule } from './investment/investment.module';
+import { SchoolFeesModule } from './school-fees/school-fees.module';
 import { UserModule } from './user/user.module';
 import { UserDeviceModule } from './user-device/user-device.module';
 
@@ -16,6 +17,7 @@ import { UserDeviceModule } from './user-device/user-device.module';
     UserDeviceModule,
     InvestmentModule,
     ConsumptionModule,
+    SchoolFeesModule,
   ],
   providers: [
     {

@@ -23,6 +23,7 @@ interface AppConfig {
   redisPort?: number;
   cache: boolean;
   bodyJsonSizeLimit: string;
+  schoolFeesDataDir: string;
   database: {
     driver: string;
     mongo?: DatabaseConfig;

@@ -20,7 +20,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "migrate:categories": "tsx scripts/migrate-categories.ts"
+    "migrate:categories": "tsx scripts/migrate-categories.ts",
+    "school-fees:reset": "tsx scripts/reset-school-fees-data.ts"
   },
   "dependencies": {
     "@faker-js/faker": "^10.4.0",
@@ -102,9 +103,10 @@
       "!**/main.ts",
       "!**/bootstrap/**",
       "!**/database/**",
-      "!**/typing.d.ts"
+      "!**/typing.d.ts",
+      "!**/coverage/**"
     ],
-    "coverageDirectory": "./coverage",
+    "coverageDirectory": "../coverage",
     "testEnvironment": "node",
     "coverageReporters": [
       "text",
@@ -118,6 +120,7 @@
         "statements": 0
       }
     },
-    "testTimeout": 300000
+    "testTimeout": 300000,
+    "coverageProvider": "v8"
   }
 }
